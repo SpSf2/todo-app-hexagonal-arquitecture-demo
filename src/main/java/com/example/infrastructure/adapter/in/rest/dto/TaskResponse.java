@@ -1,4 +1,4 @@
-package com.example.infrastructure.adapter.dto;
+package com.example.infrastructure.adapter.in.rest.dto;
 
 import java.time.LocalDateTime;
 
