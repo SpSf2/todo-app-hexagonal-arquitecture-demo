@@ -1,17 +1,13 @@
 package com.example.infrastructure.adapter.in.rest.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter 
-@Setter 
-public class CreateTaskRequest {
+public record CreateTaskRequest (
 
     @NotBlank(message = "El titulo es obligatorio")
-    private String title;
+    String title,
 
     @NotBlank(message = "La descripcion es obligatoria")
-    private String description;
+    String description)
 
-}
+{}
