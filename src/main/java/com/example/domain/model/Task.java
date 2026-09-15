@@ -51,20 +51,40 @@ public class Task {
         if (createdAt == null) {
             this.createdAt = LocalDateTime.now();
         }
-        //this no es necesario cuando no hay nombres repetidos, 
-        // pero es una buena práctica para evitar confusiones
     }
 
+    public void updateInfo(String title, String description) {
+        // Si ya se completó, no se deja editar (bloqueo de seguridad)
+        if (this.status == TaskStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot update a completed task");
+        }
 
+        // Validaciones de contenido
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Title cannot be empty");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Description cannot be empty");
+        }
 
-
-
-
-
-
-
-
-
-
-
+        // Se actualizan los campos si el status es PENDING
+        this.title = title;
+        this.description = description;
+    }
+        //this no es necesario cuando no hay nombres repetidos, 
+        // pero es una buena práctica para evitar confusiones
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

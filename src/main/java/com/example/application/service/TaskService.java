@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.application.port.in.CreateTaskUseCase;
 import com.example.application.port.in.GetTaskusecase;
 import com.example.application.port.in.ListTaskUseCase;
+import com.example.application.port.in.UpdateTaskUseCase;
 import com.example.application.port.out.TaskRepositoryPort;
 import com.example.domain.exception.TaskNotFoundException;
 import com.example.domain.model.Task;
@@ -27,7 +28,7 @@ es decir, estaría acoplada el spring framework
 anotada con @Configuration o @Componente en la capa de Infraestructura donde tengamos todos los
 Bean que hay que crear cuando se levanta el contexto de Spring  */
 
-public class TaskService implements CreateTaskUseCase, GetTaskusecase, ListTaskUseCase {
+public class TaskService implements CreateTaskUseCase, GetTaskusecase, ListTaskUseCase, UpdateTaskUseCase {
     //inyectamos el port
     private final TaskRepositoryPort taskRepositoryPort;
 
@@ -47,6 +48,16 @@ public class TaskService implements CreateTaskUseCase, GetTaskusecase, ListTaskU
     public List<Task> listAll() {
        
         return taskRepositoryPort.findAll();
+    }
+
+    @Override
+    public Task updateTask(Long id, String title, String description) {
+        Task task = taskRepositoryPort.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found with id: " + id));
+
+        task.updateInfo(title, description);
+
+        return taskRepositoryPort.save(task);
     }
 
 }
