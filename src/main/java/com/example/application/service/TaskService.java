@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.application.port.in.CompleteTaskUseCase;
 import com.example.application.port.in.CreateTaskUseCase;
+import com.example.application.port.in.DeleteTaskUseCase;
 import com.example.application.port.in.GetTaskusecase;
 import com.example.application.port.in.ListTaskUseCase;
 import com.example.application.port.in.UpdateTaskUseCase;
@@ -30,7 +31,7 @@ anotada con @Configuration o @Componente en la capa de Infraestructura donde ten
 Bean que hay que crear cuando se levanta el contexto de Spring  */
 
 public class TaskService implements CreateTaskUseCase, GetTaskusecase, ListTaskUseCase, UpdateTaskUseCase,
-               CompleteTaskUseCase {
+               CompleteTaskUseCase, DeleteTaskUseCase {
     //inyectamos el port
     private final TaskRepositoryPort taskRepositoryPort;
 
@@ -73,4 +74,15 @@ public class TaskService implements CreateTaskUseCase, GetTaskusecase, ListTaskU
         return taskRepositoryPort.save(task);
     }
 
+    @Override
+    public void deleteTask(Long id) {
+        // 1. Verificar si existe la tarea; si no existe, lanza 404
+        Task task = taskRepositoryPort.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
+
+        // 2. Eliminar la tarea mediante el puerto de salida
+        taskRepositoryPort.deleteById(task.getId());
+    }
 }
+
+

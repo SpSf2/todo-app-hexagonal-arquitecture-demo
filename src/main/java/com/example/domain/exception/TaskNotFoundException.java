@@ -10,4 +10,8 @@ public class TaskNotFoundException extends RuntimeException {
         super("No se encontró la tarea con id: " + id);
     }
 
+    public TaskNotFoundException(String message) {
+        super(message);
+    }
+
 }

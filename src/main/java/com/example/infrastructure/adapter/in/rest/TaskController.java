@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.application.port.in.CompleteTaskUseCase;
 import com.example.application.port.in.CreateTaskUseCase;
+import com.example.application.port.in.DeleteTaskUseCase;
 import com.example.application.port.in.GetTaskusecase;
 import com.example.application.port.in.ListTaskUseCase;
 import com.example.application.port.in.UpdateTaskUseCase;
@@ -38,6 +40,7 @@ public class TaskController {
     private final TaskRestMapper taskRestMapper;
     private final UpdateTaskUseCase updateTaskUseCase;
     private final CompleteTaskUseCase completeTaskUseCase;
+    private final DeleteTaskUseCase deleteTaskUseCase;
 
     @PostMapping
     public ResponseEntity<TaskResponse> create(@Valid @RequestBody CreateTaskRequest request){
@@ -76,5 +79,11 @@ public class TaskController {
         TaskResponse response = taskRestMapper.toResponse(completedTask);
         
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        deleteTaskUseCase.deleteTask(id);
+        return ResponseEntity.noContent().build(); // Retorna 204 No Content
     }
 }

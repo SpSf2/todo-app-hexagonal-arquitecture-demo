@@ -15,4 +15,6 @@ public interface TaskRepositoryPort {
     //Método para listar todas las tareas
     List<Task> findAll();
 
+    void deleteById(long id);
+
 }
