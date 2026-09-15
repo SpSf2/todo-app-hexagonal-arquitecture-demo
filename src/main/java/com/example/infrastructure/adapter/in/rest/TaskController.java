@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.application.port.in.CompleteTaskUseCase;
 import com.example.application.port.in.CreateTaskUseCase;
 import com.example.application.port.in.GetTaskusecase;
 import com.example.application.port.in.ListTaskUseCase;
@@ -35,6 +37,7 @@ public class TaskController {
     private final ListTaskUseCase listTaskUseCase;
     private final TaskRestMapper taskRestMapper;
     private final UpdateTaskUseCase updateTaskUseCase;
+    private final CompleteTaskUseCase completeTaskUseCase;
 
     @PostMapping
     public ResponseEntity<TaskResponse> create(@Valid @RequestBody CreateTaskRequest request){
@@ -64,6 +67,14 @@ public class TaskController {
         Task updatedTask = updateTaskUseCase.updateTask(id, request.title(), request.description());
         TaskResponse response = taskRestMapper.toResponse(updatedTask);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<TaskResponse> completeTask(@PathVariable Long id) {
+        Task completedTask = completeTaskUseCase.completeTask(id);
+        TaskResponse response = taskRestMapper.toResponse(completedTask);
+        
         return ResponseEntity.ok(response);
     }
 }

@@ -41,4 +41,14 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
+    public ProblemDetail handleDomainException(RuntimeException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST, ex.getMessage()
+        );
+
+        problem.setTitle("Regla de Negocio Violada");
+        return problem;
+    }
+
 }
