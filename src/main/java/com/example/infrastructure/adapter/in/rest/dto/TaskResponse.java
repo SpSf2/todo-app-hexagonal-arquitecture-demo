@@ -11,5 +11,6 @@ public record TaskResponse(
     String description,
     TaskStatus status,
     LocalDateTime createdAt,
-    LocalDateTime completedAt
+    LocalDateTime completedAt,
+    String imageUrl // campo Agregado aquí
 ) {}

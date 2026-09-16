@@ -23,6 +23,7 @@ public class Task {
     private TaskStatus status; //ENUM
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
+    private String imageUrl;
 
     /* Los metodos siguientes aportan comportamiento, , es decir, las reglas de negocio para la
     gestión de las tareas */
@@ -70,6 +71,11 @@ public class Task {
         // Se actualizan los campos si el status es PENDING
         this.title = title;
         this.description = description;
+    }
+
+    // Método de negocio para asignar la imagen
+    public void updateImage(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
         //this no es necesario cuando no hay nombres repetidos, 
         // pero es una buena práctica para evitar confusiones

@@ -4,6 +4,7 @@ package com.example.application.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.application.port.in.CompleteTaskUseCase;
 import com.example.application.port.in.CreateTaskUseCase;
@@ -11,6 +12,8 @@ import com.example.application.port.in.DeleteTaskUseCase;
 import com.example.application.port.in.GetTaskusecase;
 import com.example.application.port.in.ListTaskUseCase;
 import com.example.application.port.in.UpdateTaskUseCase;
+import com.example.application.port.in.UploadTaskImageUseCase;
+import com.example.application.port.out.StoragePort;
 import com.example.application.port.out.TaskRepositoryPort;
 import com.example.domain.exception.TaskNotFoundException;
 import com.example.domain.model.Task;
@@ -31,9 +34,10 @@ anotada con @Configuration o @Componente en la capa de Infraestructura donde ten
 Bean que hay que crear cuando se levanta el contexto de Spring  */
 
 public class TaskService implements CreateTaskUseCase, GetTaskusecase, ListTaskUseCase, UpdateTaskUseCase,
-               CompleteTaskUseCase, DeleteTaskUseCase {
+               CompleteTaskUseCase, DeleteTaskUseCase, UploadTaskImageUseCase {
     //inyectamos el port
     private final TaskRepositoryPort taskRepositoryPort;
+    private final StoragePort storagePort; // Inyectamos el puerto de almacenamiento
 
     @Override
     public Task create(Task task) {
@@ -75,12 +79,34 @@ public class TaskService implements CreateTaskUseCase, GetTaskusecase, ListTaskU
     }
 
     @Override
+    public Task uploadImage(Long taskId, MultipartFile file) {
+        // 1. Buscar la tarea
+        Task task = taskRepositoryPort.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + taskId));
+
+        // 2. Si ya tenía una imagen previa, la eliminamos físicamente
+        if (task.getImageUrl() != null) {
+            storagePort.delete(task.getImageUrl());
+        }
+
+        // 3. Guardar el nuevo archivo en disco
+        String fileName = storagePort.store(file, taskId);
+
+        // 4. Actualizar el modelo de dominio y persistir
+        task.updateImage(fileName);
+        return taskRepositoryPort.save(task);
+    }
+
+    @Override
     public void deleteTask(Long id) {
-        // 1. Verificar si existe la tarea; si no existe, lanza 404
         Task task = taskRepositoryPort.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
 
-        // 2. Eliminar la tarea mediante el puerto de salida
+        // Borrar el archivo de imagen asociado si existe
+        if (task.getImageUrl() != null) {
+            storagePort.delete(task.getImageUrl());
+        }
+
         taskRepositoryPort.deleteById(task.getId());
     }
 }

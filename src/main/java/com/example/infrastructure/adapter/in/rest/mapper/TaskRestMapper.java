@@ -20,5 +20,6 @@ public interface TaskRestMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "completedAt", ignore = true)
+    @Mapping(target = "imageUrl", ignore = true) // Agregado aquí para evitar warning al crear
     Task toDomain(CreateTaskRequest request);
 }

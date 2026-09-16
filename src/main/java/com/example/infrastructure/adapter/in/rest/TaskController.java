@@ -3,6 +3,7 @@ package com.example.infrastructure.adapter.in.rest;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.application.port.in.CompleteTaskUseCase;
 import com.example.application.port.in.CreateTaskUseCase;
@@ -20,6 +23,7 @@ import com.example.application.port.in.DeleteTaskUseCase;
 import com.example.application.port.in.GetTaskusecase;
 import com.example.application.port.in.ListTaskUseCase;
 import com.example.application.port.in.UpdateTaskUseCase;
+import com.example.application.port.in.UploadTaskImageUseCase;
 import com.example.domain.model.Task;
 import com.example.infrastructure.adapter.in.rest.dto.CreateTaskRequest;
 import com.example.infrastructure.adapter.in.rest.dto.TaskResponse;
@@ -41,6 +45,7 @@ public class TaskController {
     private final UpdateTaskUseCase updateTaskUseCase;
     private final CompleteTaskUseCase completeTaskUseCase;
     private final DeleteTaskUseCase deleteTaskUseCase;
+    private final UploadTaskImageUseCase uploadTaskImageUseCase;
 
     @PostMapping
     public ResponseEntity<TaskResponse> create(@Valid @RequestBody CreateTaskRequest request){
@@ -85,5 +90,16 @@ public class TaskController {
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         deleteTaskUseCase.deleteTask(id);
         return ResponseEntity.noContent().build(); // Retorna 204 No Content
+    }
+
+    @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<TaskResponse> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
+        Task task = uploadTaskImageUseCase.uploadImage(id, file);
+        TaskResponse response = taskRestMapper.toResponse(task);
+
+        return ResponseEntity.ok(response);
     }
 }
